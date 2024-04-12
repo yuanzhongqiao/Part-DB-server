@@ -1,166 +1,96 @@
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Part-DB/Part-DB-symfony/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/Part-DB/Part-DB-symfony/?branch=master)
-![PHPUnit Tests](https://github.com/Part-DB/Part-DB-symfony/workflows/PHPUnit%20Tests/badge.svg)
-![Static analysis](https://github.com/Part-DB/Part-DB-symfony/workflows/Static%20analysis/badge.svg)
-[![codecov](https://codecov.io/gh/Part-DB/Part-DB-server/branch/master/graph/badge.svg)](https://codecov.io/gh/Part-DB/Part-DB-server)
-![GitHub License](https://img.shields.io/github/license/Part-DB/Part-DB-symfony)
-![PHP Version](https://img.shields.io/badge/PHP-%3E%3D%208.1-green)
-
-![Docker Pulls](https://img.shields.io/docker/pulls/jbtronics/part-db1)
-![Docker Build Status](https://github.com/Part-DB/Part-DB-symfony/workflows/Docker%20Image%20Build/badge.svg)
-[![Crowdin](https://badges.crowdin.net/e/8325196085d4bee8c04b75f7c915452a/localized.svg)](https://part-db.crowdin.com/part-db)
-
-**[Documentation](https://docs.part-db.de/)** | **[Demo](https://demo.part-db.de/)** | **[Docker Image](https://hub.docker.com/r/jbtronics/part-db1)**
-
-# Part-DB
-
-Part-DB is an Open-Source inventory management system for your electronic components.
-It is installed on a web server and so can be accessed with any browser without the need to install additional software.
-
-The version in this repository is a complete rewrite of the legacy [Part-DB](https://github.com/Part-DB/Part-DB)
-(Version < 1.0) based on a modern framework and is the recommended version to use.
-
-If you find a bug, please open an [Issue on GitHub,](https://github.com/Part-DB/Part-DB-server/issues) so it can be fixed
-for everybody.
-
-## Demo
-
-If you want to test Part-DB without installing it, you can use [this](https://demo.part-db.de/) Heroku instance.
-(Or this link for the [German Version](https://demo.part-db.de/de/)).
-
-You can log in with username: *user* and password: *user*.
-
-Every change to the master branch gets automatically deployed, so it represents the current development progress and is
-may not completely stable. Please mind, that the free Heroku instance is used, so it can take some time when loading
-the page
-for the first time.
-
-<img src="https://github.com/Part-DB/Part-DB-server/raw/master/docs/assets/readme/part_info.png">
-<img src="https://github.com/Part-DB/Part-DB-server/raw/master/docs/assets/readme/parts_list.png">
-
-## Features
-
-* Inventory management of your electronic parts. Each part can be assigned to a category, footprint, manufacturer,
-  and multiple store locations and price information. Parts can be grouped using tags. You can associate various files
-  like datasheets or pictures with the parts.
-* Multi-language support (currently German, English, Russian, Japanese, French, Czech, Danish, and Chinese)
-* Barcodes/Labels generator for parts and storage locations, scan barcodes via webcam using the builtin barcode scanner
-* User system with groups and detailed (fine granular) permissions.
-  Two-factor authentication is supported (Google Authenticator and Webauthn/U2F keys) and can be enforced for groups.
-  Password reset via email can be set up.
-* Optional support for single sign-on (SSO) via SAML (using an intermediate service
-  like [Keycloak](https://www.keycloak.org/) you can connect Part-DB to an existing LDAP or Active Directory server)
-* Import/Export system for parts and data structure. BOM import for projects from KiCAD is supported.
-* Project management: Create projects and assign parts to the bill of material (BOM), to show how often you could build
-  this project and directly withdraw all components needed from DB
-* Event log: Track what changes happen to your inventory, track which user does what. Revert your parts to older
-  versions.
-* Responsive design: You can use Part-DB on your PC, your tablet, and your smartphone using the same interface.
-* MySQL and SQLite are supported as database backends
-* Support for rich text descriptions and comments in parts
-* Support for multiple currencies and automatic update of exchange rates supported
-* Powerful search and filter function, including parametric search (search for parts according to some specifications)
-* Automatic thumbnail generation for pictures
-* Use cloud providers (like Octopart, Digikey, Farnell, LCSC or TME) to automatically get part information, datasheets, and
-  prices for parts
-* API to access Part-DB from other applications/scripts
-* [Integration with KiCad](https://docs.part-db.de/usage/eda_integration.html): Use Part-DB as the central datasource for your
-  KiCad and see available parts from Part-DB directly inside KiCad.
-
-With these features, Part-DB is useful to hobbyists, who want to keep track of their private electronic parts inventory,
-or maker spaces, where many users should have (controlled) access to the shared inventory.
-
-Part-DB is also used by small companies and universities for managing their inventory.
-
-## Requirements
-
-* A **web server** (like Apache2 or nginx) that is capable of
-  running [Symfony 5](https://symfony.com/doc/current/reference/requirements.html),
-  this includes a minimum PHP version of **PHP 8.1**
-* A **MySQL** (at least 5.7) /**MariaDB** (at least 10.2.2) database server if you do not want to use SQLite.
-* Shell access to your server is highly suggested!
-* For building the client-side assets **yarn** and **nodejs** (>= 18.0) is needed.
-
-## Installation
-
-If you want to upgrade your legacy (< 1.0.0) version of Part-DB to this version, please
-read [this](https://docs.part-db.de/upgrade_legacy.html) first.
-
-*Hint:* A docker image is available under [jbtronics/part-db1](https://hub.docker.com/r/jbtronics/part-db1). How to set
-up Part-DB via docker is described [here](https://docs.part-db.de/installation/installation_docker.html).
-
-**Below you find a very rough outline of the installation process, see [here](https://docs.part-db.de/installation/)
-for a detailed guide on how to install Part-DB.**
-
-1. Copy or clone this repository into a folder on your server.
-2. Configure your webserver to serve from the `public/` folder.
-   See [here](https://symfony.com/doc/current/setup/web_server_configuration.html)
-   for additional information.
-3. Copy the global config file `cp .env .env.local` and edit `.env.local`:
-    * Change the line `APP_ENV=dev` to `APP_ENV=prod`
-    * If you do not want to use SQLite, change the value of `DATABASE_URL=` to your needs (
-      see [here](http://docs.doctrine-project.org/projects/doctrine-dbal/en/latest/reference/configuration.html#connecting-using-a-url))
-      for the format.
-      In bigger instances with concurrent accesses, MySQL is more performant. This can not be changed easily later, so
-      choose wisely.
-4. Install composer dependencies and generate autoload files: `composer install -o --no-dev`
-5. Install client side dependencies and build it: `yarn install` and `yarn build`
-6. _Optional_ (speeds up first load): Warmup cache: `php bin/console cache:warmup`
-7. Upgrade database to new scheme (or create it, when it was empty): `php bin/console doctrine:migrations:migrate` and
-   follow the instructions given. During the process the password for the admin is user is shown. Copy it. **Caution**:
-   These steps tamper with your database and could potentially destroy it. So make sure to make a backup of your
-   database.
-8. You can configure Part-DB via `config/parameters.yaml`. You should check if settings match your expectations after
-   you installed/upgraded Part-DB. Check if `partdb.default_currency` matches your mainly used currency (this can not be
-   changed after creating price information).
-   Run `php bin/console cache:clear` when you change something.
-9. Access Part-DB in your browser (under the URL you put it) and log in with user *admin*. Password is the one outputted
-   during DB setup.
-   If you can not remember the password, set a new one with `php bin/console app:set-password admin`. You can create
-   new users with the admin user and start using Part-DB.
-
-When you want to upgrade to a newer version, then just copy the new files into the folder
-and repeat the steps 4. to 7.
-
-Normally a random password is generated when the admin user is created during initial database creation,
-however, you can set the initial admin password, by setting the `INITIAL_ADMIN_PW` env var.
-
-You can configure Part-DB to your needs by changing environment variables in the `.env.local` file.
-See [here](https://docs.part-db.de/configuration.html) for more information.
-
-### Reverse proxy
-
-If you are using a reverse proxy, you have to ensure that the proxies set the `X-Forwarded-*` headers correctly, or you
-will get HTTP/HTTPS mixup and wrong hostnames.
-If the reverse proxy is on a different server (or it cannot access Part-DB via localhost) you have to set
-the `TRUSTED_PROXIES` env variable to match your reverse proxy's IP address (or IP block). You can do this in
-your `.env.local` or (when using docker) in your `docker-compose.yml` file.
-
-## Donate for development
-
-If you want to donate to the Part-DB developer, see the sponsor button in the top bar (next to the repo name).
-There you will find various methods to support development on a monthly or a one-time base.
-
-## Built with
-
-* [Symfony 5](https://symfony.com/): The main framework used for the serverside PHP
-* [Bootstrap 5](https://getbootstrap.com/) and [Bootswatch](https://bootswatch.com/): Used as website theme
-* [Fontawesome](https://fontawesome.com/): Used as icon set
-* [Hotwire Stimulus](https://stimulus.hotwired.dev/) and [Hotwire Turbo](https://turbo.hotwired.dev/): Frontend
-  Javascript
-
-## Authors
-
-* **Jan Böhmer** - *Initial work* - [GitHub](https://github.com/jbtronics/)
-
-See also the list of [contributors](https://github.com/Part-DB/Part-DB-server/graphs/contributors) who participated in
-this project.
-
-Based on the original Part-DB by Christoph Lechner and K. Jacobs
-
-## License
-
-Part-DB is licensed under the GNU Affero General Public License v3.0 (or at your opinion any later).
-This mostly means that you can use Part-DB for whatever you want (even use it commercially)
-as long as you publish the source code for every change you make under the AGPL, too.
-
-See [LICENSE](https://github.com/Part-DB/Part-DB-server/blob/master/LICENSE) for more information.
+<div class="Box-sc-g0xbh4-0 bJMeLZ js-snippet-clipboard-copy-unpositioned" data-hpc="true"><article class="markdown-body entry-content container-lg" itemprop="text"><p dir="auto"><a href="https://scrutinizer-ci.com/g/Part-DB/Part-DB-symfony/?branch=master" rel="nofollow"><img src="https://camo.githubusercontent.com/a558ef7a553f1fd243957d2b3d4cf0419365860d0e63a70bb4b432f16f3d9258/68747470733a2f2f7363727574696e697a65722d63692e636f6d2f672f506172742d44422f506172742d44422d73796d666f6e792f6261646765732f7175616c6974792d73636f72652e706e673f623d6d6173746572" alt="审查者代码质量" data-canonical-src="https://scrutinizer-ci.com/g/Part-DB/Part-DB-symfony/badges/quality-score.png?b=master" style="max-width: 100%;"></a>
+<a target="_blank" rel="noopener noreferrer" href="https://github.com/Part-DB/Part-DB-symfony/workflows/PHPUnit%20Tests/badge.svg"><img src="https://github.com/Part-DB/Part-DB-symfony/workflows/PHPUnit%20Tests/badge.svg" alt="PHP 单元测试" style="max-width: 100%;"></a>
+<a target="_blank" rel="noopener noreferrer" href="https://github.com/Part-DB/Part-DB-symfony/workflows/Static%20analysis/badge.svg"><img src="https://github.com/Part-DB/Part-DB-symfony/workflows/Static%20analysis/badge.svg" alt="静态分析" style="max-width: 100%;"></a>
+<a href="https://codecov.io/gh/Part-DB/Part-DB-server" rel="nofollow"><img src="https://camo.githubusercontent.com/118ca9bbbdda79e98061e02f9b59eb90c0d363170f09289f5a4f2e58b5a6da2d/68747470733a2f2f636f6465636f762e696f2f67682f506172742d44422f506172742d44422d7365727665722f6272616e63682f6d61737465722f67726170682f62616467652e737667" alt="代码科夫" data-canonical-src="https://codecov.io/gh/Part-DB/Part-DB-server/branch/master/graph/badge.svg" style="max-width: 100%;"></a>
+<a target="_blank" rel="noopener noreferrer nofollow" href="https://camo.githubusercontent.com/e5ba6f35e4010e853a9ab5961c0c03def064f738d6b6881e6254250eaeebc10e/68747470733a2f2f696d672e736869656c64732e696f2f6769746875622f6c6963656e73652f506172742d44422f506172742d44422d73796d666f6e79"><img src="https://camo.githubusercontent.com/e5ba6f35e4010e853a9ab5961c0c03def064f738d6b6881e6254250eaeebc10e/68747470733a2f2f696d672e736869656c64732e696f2f6769746875622f6c6963656e73652f506172742d44422f506172742d44422d73796d666f6e79" alt="GitHub 许可证" data-canonical-src="https://img.shields.io/github/license/Part-DB/Part-DB-symfony" style="max-width: 100%;"></a>
+<a target="_blank" rel="noopener noreferrer nofollow" href="https://camo.githubusercontent.com/aff59d25ddac06814a792a2ec709e1102abcde5b3c5556975b6a58e4de66bca1/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f5048502d253345253344253230382e312d677265656e"><img src="https://camo.githubusercontent.com/aff59d25ddac06814a792a2ec709e1102abcde5b3c5556975b6a58e4de66bca1/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f5048502d253345253344253230382e312d677265656e" alt="PHP版本" data-canonical-src="https://img.shields.io/badge/PHP-%3E%3D%208.1-green" style="max-width: 100%;"></a></p>
+<p dir="auto"><a target="_blank" rel="noopener noreferrer nofollow" href="https://camo.githubusercontent.com/b8704cfd2b476c93bc1af83bf2d5a93be6d1733a4422218ee3624a4c54e71cc6/68747470733a2f2f696d672e736869656c64732e696f2f646f636b65722f70756c6c732f6a6274726f6e6963732f706172742d646231"><img src="https://camo.githubusercontent.com/b8704cfd2b476c93bc1af83bf2d5a93be6d1733a4422218ee3624a4c54e71cc6/68747470733a2f2f696d672e736869656c64732e696f2f646f636b65722f70756c6c732f6a6274726f6e6963732f706172742d646231" alt="Docker 拉取" data-canonical-src="https://img.shields.io/docker/pulls/jbtronics/part-db1" style="max-width: 100%;"></a>
+<a target="_blank" rel="noopener noreferrer" href="https://github.com/Part-DB/Part-DB-symfony/workflows/Docker%20Image%20Build/badge.svg"><img src="https://github.com/Part-DB/Part-DB-symfony/workflows/Docker%20Image%20Build/badge.svg" alt="Docker 构建状态" style="max-width: 100%;"></a>
+<a href="https://part-db.crowdin.com/part-db" rel="nofollow"><img src="https://camo.githubusercontent.com/d2ad87e7f84b4931e7f2bb3964904826814ae4b141076a05d7c8bd76ce19e925/68747470733a2f2f6261646765732e63726f7764696e2e6e65742f652f38333235313936303835643462656538633034623735663763393135343532612f6c6f63616c697a65642e737667" alt="克罗丁" data-canonical-src="https://badges.crowdin.net/e/8325196085d4bee8c04b75f7c915452a/localized.svg" style="max-width: 100%;"></a></p>
+<p dir="auto"><strong><a href="https://docs.part-db.de/" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">文档</font></font></a></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">|</font></font><strong><a href="https://demo.part-db.de/" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">演示</font></font></a></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">|</font></font><strong><a href="https://hub.docker.com/r/jbtronics/part-db1" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> Docker 镜像</font></font></a></strong></p>
+<div class="markdown-heading" dir="auto"><h1 tabindex="-1" class="heading-element" dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">部分数据库</font></font></h1><a id="user-content-part-db" class="anchor" aria-label="永久链接：部分数据库" href="#part-db"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a></div>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Part-DB 是一个针对电子元件的开源库存管理系统。它安装在网络服务器上，因此可以使用任何浏览器进行访问，无需安装其他软件。</font></font></p>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">此存储库中的版本是</font><font style="vertical-align: inherit;">
+基于现代框架的旧版</font></font><a href="https://github.com/Part-DB/Part-DB"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Part-DB （版本 &lt; 1.0）的完全重写，是推荐使用的版本。</font></font></a><font style="vertical-align: inherit;"></font></p>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">如果您发现错误，请</font></font><a href="https://github.com/Part-DB/Part-DB-server/issues"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">在 GitHub 上打开问题，</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">以便每个人都能修复它。</font></font></p>
+<div class="markdown-heading" dir="auto"><h2 tabindex="-1" class="heading-element" dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">演示</font></font></h2><a id="user-content-demo" class="anchor" aria-label="永久链接：演示" href="#demo"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a></div>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">如果您想在不安装 Part-DB 的情况下测试它，可以使用</font></font><a href="https://demo.part-db.de/" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">此</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Heroku 实例。 （或者</font></font><a href="https://demo.part-db.de/de/" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">德语版本</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">的链接</font><font style="vertical-align: inherit;">）。</font></font></p>
+<p dir="auto"><font style="vertical-align: inherit;"></font><em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">您可以使用用户名： user</font></font></em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">和密码：</font></font><em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">user</font></font></em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">登录</font><font style="vertical-align: inherit;">。</font></font></p>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">主分支的每次更改都会自动部署，因此它代表了当前的开发进度，并且可能不完全稳定。请注意，使用免费的 Heroku 实例，因此首次加载页面可能需要一些时间。</font></font></p>
+<p dir="auto"><a target="_blank" rel="noopener noreferrer" href="https://github.com/Part-DB/Part-DB-server/raw/master/docs/assets/readme/part_info.png"><img src="https://github.com/Part-DB/Part-DB-server/raw/master/docs/assets/readme/part_info.png" style="max-width: 100%;"></a></p>
+<p dir="auto"><a target="_blank" rel="noopener noreferrer" href="https://github.com/Part-DB/Part-DB-server/raw/master/docs/assets/readme/parts_list.png"><img src="https://github.com/Part-DB/Part-DB-server/raw/master/docs/assets/readme/parts_list.png" style="max-width: 100%;"></a></p>
+<div class="markdown-heading" dir="auto"><h2 tabindex="-1" class="heading-element" dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">特征</font></font></h2><a id="user-content-features" class="anchor" aria-label="永久链接：特点" href="#features"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a></div>
+<ul dir="auto">
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">电子零件的库存管理。每个零件都可以分配给一个类别、占地面积、制造商以及多个商店位置和价格信息。可以使用标签对部件进行分组。您可以将数据表或图片等各种文件与零件相关联。</font></font></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">多语言支持（目前支持德语、英语、俄语、日语、法语、捷克语、丹麦语和中文）</font></font></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">零件和存储位置的条形码/标签生成器，使用内置条形码扫描仪通过网络摄像头扫描条形码</font></font></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">具有组和详细（细粒度）权限的用户系统。支持双因素身份验证（Google Authenticator 和 Webauthn/U2F 密钥），并且可以针对组强制执行。可以设置通过电子邮件重置密码。</font></font></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">通过 SAML 对单点登录 (SSO) 的可选支持（使用</font></font><a href="https://www.keycloak.org/" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Keycloak</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">等中间服务，您可以将 Part-DB 连接到现有的 LDAP 或 Active Directory 服务器）</font></font></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">零件和数据结构的导入/导出系统。支持从 KiCAD 导入项目的 BOM。</font></font></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">项目管理：创建项目并将零件分配到物料清单 (BOM)，以显示您可以构建此项目并直接从数据库中提取所需的所有组件的频率</font></font></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">事件日志：跟踪库存发生的变化，跟踪哪个用户做了什么。将您的部件恢复到旧版本。</font></font></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">响应式设计：您可以使用相同的界面在 PC、平板电脑和智能手机上使用 Part-DB。</font></font></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">支持 MySQL 和 SQLite 作为数据库后端</font></font></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">支持丰富的文本描述和部分注释</font></font></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">支持多种货币并支持自动更新汇率</font></font></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">强大的搜索和过滤功能，包括参数搜索（根据某些规格搜索零件）</font></font></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">自动生成图片缩略图</font></font></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">使用云提供商（例如 Octopart、Digikey、Farnell、LCSC 或 TME）自动获取零件信息、数据表和零件价格</font></font></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">用于从其他应用程序/脚本访问 Part-DB 的 API</font></font></li>
+<li><a href="https://docs.part-db.de/usage/eda_integration.html" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">与 KiCad 集成</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">：使用 Part-DB 作为 KiCad 的中央数据源，并直接在 KiCad 内查看 Part-DB 中的可用零件。</font></font></li>
+</ul>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">凭借这些功能，Part-DB 对于业余爱好者来说非常有用，他们希望跟踪自己的私人电子零件库存或创客空间，其中许多用户应该能够（受控）访问共享库存。</font></font></p>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">小公司和大学也使用 Part-DB 来管理库存。</font></font></p>
+<div class="markdown-heading" dir="auto"><h2 tabindex="-1" class="heading-element" dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">要求</font></font></h2><a id="user-content-requirements" class="anchor" aria-label="永久链接：要求" href="#requirements"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a></div>
+<ul dir="auto">
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">能够运行</font><a href="https://symfony.com/doc/current/reference/requirements.html" rel="nofollow"><font style="vertical-align: inherit;">Symfony 5 的</font></a></font><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Web 服务器</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">（例如 Apache2 或 nginx） </font><font style="vertical-align: inherit;">，其中至少包括</font><strong><font style="vertical-align: inherit;">PHP 8.1的 PHP 版本</font></strong></font><a href="https://symfony.com/doc/current/reference/requirements.html" rel="nofollow"><font style="vertical-align: inherit;"></font></a><font style="vertical-align: inherit;"></font><strong><font style="vertical-align: inherit;"></font></strong></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">如果您不想使用 SQLite，则需要</font></font><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">MySQL</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">（</font><font style="vertical-align: inherit;">至少 5.7）/ </font></font><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">MariaDB （至少 10.2.2）数据库服务器。</font></font></strong><font style="vertical-align: inherit;"></font></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">强烈建议通过 shell 访问您的服务器！</font></font></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">为了构建客户端资产，</font><font style="vertical-align: inherit;">需要</font></font><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">yarn</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">和</font></font><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">nodejs (&gt;= 18.0)。</font></font></strong><font style="vertical-align: inherit;"></font></li>
+</ul>
+<div class="markdown-heading" dir="auto"><h2 tabindex="-1" class="heading-element" dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">安装</font></font></h2><a id="user-content-installation" class="anchor" aria-label="永久链接：安装" href="#installation"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a></div>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">如果您想将旧版（&lt; 1.0.0）的 Part-DB 升级到此版本，请先阅读</font></font><a href="https://docs.part-db.de/upgrade_legacy.html" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">本文</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">。</font></font></p>
+<p dir="auto"><em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">提示：</font></font></em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> docker 镜像位于</font></font><a href="https://hub.docker.com/r/jbtronics/part-db1" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">jbtronics/part-db1</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">下。</font></font><a href="https://docs.part-db.de/installation/installation_docker.html" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">这里</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">描述了如何通过 docker 设置 Part-DB </font><font style="vertical-align: inherit;">。</font></font></p>
+<p dir="auto"><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">下面您可以找到安装过程的非常粗略的概述，请参阅</font></font><a href="https://docs.part-db.de/installation/" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">此处</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+以获取有关如何安装 Part-DB 的详细指南。</font></font></strong></p>
+<ol dir="auto">
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">将此存储库复制或克隆到服务器上的文件夹中。</font></font></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">配置您的网络服务器以从该</font></font><code>public/</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">文件夹提供服务。请参阅</font></font><a href="https://symfony.com/doc/current/setup/web_server_configuration.html" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">此处</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+了解更多信息。</font></font></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">复制全局配置文件</font></font><code>cp .env .env.local</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">并编辑</font></font><code>.env.local</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">：
+</font></font><ul dir="auto">
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">将行更改</font></font><code>APP_ENV=dev</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">为</font></font><code>APP_ENV=prod</code></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">如果您不想使用 SQLite，请将 的值更改为您需要的</font><font style="vertical-align: inherit;">格式</font></font><code>DATABASE_URL=</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">（请参阅</font></font><a href="http://docs.doctrine-project.org/projects/doctrine-dbal/en/latest/reference/configuration.html#connecting-using-a-url" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">此处</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">）。在具有并发访问的较大实例中，MySQL 的性能更高。这以后不能轻易改变，所以要明智地选择。</font></font></li>
+</ul>
+</li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">安装 Composer 依赖项并生成自动加载文件：</font></font><code>composer install -o --no-dev</code></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">安装客户端依赖项并构建它：</font></font><code>yarn install</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">和</font></font><code>yarn build</code></li>
+<li><em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">可选</font></font></em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">（加快首次加载速度）：预热缓存：</font></font><code>php bin/console cache:warmup</code></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">将数据库升级到新方案（或在它为空时创建它）：</font></font><code>php bin/console doctrine:migrations:migrate</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">并按照给出的说明进行操作。在此过程中，将显示管理员的密码 user。复制它。</font></font><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">注意</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">：这些步骤会篡改您的数据库并可能会破坏它。因此，请务必对数据库进行备份。</font></font></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">您可以通过配置 Part-DB </font></font><code>config/parameters.yaml</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">。安装/升级 Part-DB 后，您应该检查设置是否符合您的期望。检查是否</font></font><code>partdb.default_currency</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">符合您主要使用的货币（创建价格信息后无法更改）。</font></font><code>php bin/console cache:clear</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">当你改变某些东西时</font><font style="vertical-align: inherit;">就运行。</font></font></li>
+<li><font style="vertical-align: inherit;"></font><em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">在浏览器中访问 Part-DB（在您输入的 URL 下）并使用用户admin</font></font></em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">登录</font><font style="vertical-align: inherit;">。密码是DB设置时输出的密码。如果您忘记了密码，请使用 设置新密码</font></font><code>php bin/console app:set-password admin</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">。您可以使用 admin 用户创建新用户并开始使用 Part-DB。</font></font></li>
+</ol>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">当您想要升级到较新版本时，只需将新文件复制到该文件夹&ZeroWidthSpace;&ZeroWidthSpace;中并重复步骤 4. 至 7.</font></font></p>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">通常，在初始数据库创建期间创建管理员用户时会生成随机密码，但是，您可以通过设置环境变量来设置初始管理员密码</font></font><code>INITIAL_ADMIN_PW</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">。</font></font></p>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">您可以通过更改文件中的环境变量来根据需要配置 Part-DB </font></font><code>.env.local</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">。浏览</font></font><a href="https://docs.part-db.de/configuration.html" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">此处</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">获取更多信息。</font></font></p>
+<div class="markdown-heading" dir="auto"><h3 tabindex="-1" class="heading-element" dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">反向代理</font></font></h3><a id="user-content-reverse-proxy" class="anchor" aria-label="永久链接：反向代理" href="#reverse-proxy"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a></div>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">如果您使用反向代理，则必须确保代理</font></font><code>X-Forwarded-*</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">正确设置标头，否则您将得到 HTTP/HTTPS 混合和错误的主机名。如果反向代理位于不同的服务器上（或者它无法通过本地主机访问 Part-DB），则必须设置</font></font><code>TRUSTED_PROXIES</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">env 变量以匹配反向代理的 IP 地址（或 IP 块）。您可以在您的</font></font><code>.env.local</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">或（使用 docker 时）</font></font><code>docker-compose.yml</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">文件中执行此操作。</font></font></p>
+<div class="markdown-heading" dir="auto"><h2 tabindex="-1" class="heading-element" dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">捐助发展</font></font></h2><a id="user-content-donate-for-development" class="anchor" aria-label="永久链接：为发展捐款" href="#donate-for-development"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a></div>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">如果您想向 Part-DB 开发人员捐款，请参阅顶部栏中的赞助商按钮（存储库名称旁边）。在那里，您将找到各种支持每月或一次性开发的方法。</font></font></p>
+<div class="markdown-heading" dir="auto"><h2 tabindex="-1" class="heading-element" dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">内置</font></font></h2><a id="user-content-built-with" class="anchor" aria-label="永久链接： 构建于" href="#built-with"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a></div>
+<ul dir="auto">
+<li><a href="https://symfony.com/" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Symfony 5</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">：用于服务器端 PHP 的主要框架</font></font></li>
+<li><a href="https://getbootstrap.com/" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Bootstrap 5</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">和</font></font><a href="https://bootswatch.com/" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Bootswatch</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">：用作网站主题</font></font></li>
+<li><a href="https://fontawesome.com/" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Fontawesome</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">：用作图标集</font></font></li>
+<li><a href="https://stimulus.hotwired.dev/" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Hotwire Stimulus</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">和</font></font><a href="https://turbo.hotwired.dev/" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Hotwire Turbo</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">：前端 Javascript</font></font></li>
+</ul>
+<div class="markdown-heading" dir="auto"><h2 tabindex="-1" class="heading-element" dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">作者</font></font></h2><a id="user-content-authors" class="anchor" aria-label="永久链接：作者" href="#authors"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a></div>
+<ul dir="auto">
+<li><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Jan Böhmer</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> -</font></font><em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">初始工作</font></font></em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">- </font></font><a href="https://github.com/jbtronics/"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">GitHub</font></font></a></li>
+</ul>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">另请参阅参与该项目的</font></font><a href="https://github.com/Part-DB/Part-DB-server/graphs/contributors"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">贡献者</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">列表。</font></font></p>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">基于 Christoph Lechner 和 K. Jacobs 的原始 Part-DB</font></font></p>
+<div class="markdown-heading" dir="auto"><h2 tabindex="-1" class="heading-element" dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">执照</font></font></h2><a id="user-content-license" class="anchor" aria-label="永久链接：许可证" href="#license"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a></div>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Part-DB 根据 GNU Affero 通用公共许可证 v3.0（或根据您的意见）获得许可。这主要意味着您可以将 Part-DB 用于您想要的任何用途（甚至将其用于商业用途），只要您也发布在 AGPL 下所做的每个更改的源代码。</font></font></p>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">请参阅</font></font><a href="https://github.com/Part-DB/Part-DB-server/blob/master/LICENSE"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">许可证</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">了解更多信息。</font></font></p>
+</article></div>
